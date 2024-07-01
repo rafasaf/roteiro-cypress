@@ -56,4 +56,53 @@ describe('template spec', () => {
     cy.get('.todo-list li')
       .should('have.length', 2);
   });
+
+  it('Edita uma tarefa', () => {
+    cy.visit('http://127.0.0.1:7001/');
+
+    cy.get('.new-todo')
+      .type('Tarefa inicial{enter}');
+      
+    cy.get('.todo-list li')
+      .first()
+      .dblclick();
+
+    cy.get('.todo-list li .edit')
+      .clear()
+      .type('Tarefa editada{enter}');
+
+    cy.get('.todo-list li')
+      .should('have.length', 1)
+      .and('contain', 'Tarefa editada');
+  });
+
+  it('Marca todas as tarefas como completas', () => {
+    cy.visit('http://127.0.0.1:7001/');
+
+    cy.get('.new-todo')
+      .type('Tarefa 1{enter}')
+      .type('Tarefa 2{enter}');
+
+    cy.get('.toggle-all').click();
+
+    cy.get('.todo-list li .toggle')
+      .each($el => {
+        cy.wrap($el).should('be.checked');
+    });
+  });
+
+
+  it('Persiste tarefas após o reload', () => {
+    cy.visit('http://127.0.0.1:7001/');
+
+    cy.get('.new-todo')
+      .type('Tarefa persistente{enter}');
+
+    cy.reload();
+
+    cy.get('.todo-list li')
+      .should('have.length', 1)
+      .and('contain', 'Tarefa persistente');
+  });
+
 });
